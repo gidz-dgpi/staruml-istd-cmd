@@ -1,5 +1,10 @@
-# StarUML POC GM iStD
+# StarUML Extensie POC Gegevensmodel iStandaarden
 
-StarUML Model Data bewaarplaats voor Proof Of Concept Gegevensmodel iStandaarden.
+Extensie ter ondersteuning van de POC gegevensmodel iStandaarden.
 
-> NB: Tevens eerste poging om te komen tot een wijze waarop **common model data** kan worden bewaard voor hergebruik in anderen modellen.
+---
+
+Bronnen:
+
+- [StarUML / Managing Extensions](https://docs.staruml.io/user-guide/managing-extensions)
+

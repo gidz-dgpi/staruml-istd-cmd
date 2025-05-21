@@ -1,0 +1,28 @@
+{
+    "name": "gidz-dgpi.staruml-poc-gm-istd",
+    "version": "0.0.1",
+    "description": "Beheren van iStandaard Common Modellen.",
+    "keywords": [
+        "uml",
+        "json",
+        "xsd"
+    ],
+    "homepage": "https://github.com/gidz-dgpi/staruml-poc-gm-istd",
+    "bugs": {
+        "url": "https://github.com/gidz-dgpi/sstaruml-poc-gm-istd/issues",
+        "email": "dgpi@zinl.nl"
+    },
+    "license": "MIT",
+    "title": "StarUML iStd Extension POC GM iStd",
+    "author": "Onno Haldar <ohaldar@zinl.nl>",
+    "contributors": [],
+    "engines": {
+        "staruml": ">=3.0.0"
+    },
+    "scripts": {
+        "test": "echo test"
+    },
+    "dependencies": {
+        "axios": "^1.9.0"
+    }
+}
