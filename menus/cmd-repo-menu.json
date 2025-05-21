@@ -1,0 +1,20 @@
+{
+    "menu": [
+      {
+        "id": "cmd-repo",
+        "label": "Common Model",
+        "submenu": [
+          {
+            "label": "Model Data ophalen",
+            "id": "cmd.repo.model.data.ophalen",
+            "command": "cmd:repo:retrieve:model:data"
+          },
+          {
+            "label": "Model data bewaren",
+            "id": "cmd.repo.model.data.bewaren",
+            "command": "cmd:repo:store:model:data"
+          }
+        ]
+      }
+    ]
+  }
