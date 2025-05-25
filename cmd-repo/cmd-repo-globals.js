@@ -12,9 +12,9 @@
  */
 const sourceData = {
     path: 'source-data',
-    commonRootMetaDataFile: 'common-root-meta-data.mdj',
-    commonModelMetaDataFile: 'common-model-meta-data.mfj',
-    commonProfileMetaDataFile: 'common-profile-meta-data.mfj',
+    commonRootDataFile: 'common-root-data.mdj',
+    commonModelDataFile: 'common-model-data.mfj',
+    commonProfileDataFile: 'common-profile-data.mfj',
 };
 
 exports.sourceData = sourceData;

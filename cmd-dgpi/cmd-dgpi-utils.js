@@ -69,12 +69,12 @@ function getTagValue(parent, tagName) {
 }
 
 /**
- * Encode Base64 String with JSON to a JavaScript Object
- * @param {String} base64JsonStr as JavaScript
- * @returns {Object}
+ * Encode Base64 String with JSON to a JavaScript Object.
+ * @param {String} jsonBase64Str JB64 formated String. based on https://jb64.org
+ * @returns {Object} Encoded JavaScript Object
  */
-function encodeBase64JsonStrToObj(base64JsonStr) {
-    return JSON.parse(atob(base64JsonStr))
+function encodeJB64ToObj(jsonBase64Str) {
+    return JSON.parse(atob(jsonBase64Str));
 }
 
 /**
@@ -86,12 +86,20 @@ function jsonToString(json) {
     return JSON.stringify(json, null, '\t')
 }
 
-exports = {
-    getUMLPackagElementByName,
-    getUMLClassElementByName,
-    getUMLDataType,
-    addStringTag,
-    getTagValue,
-    encodeBase64JsonStrToObj,
-    jsonToString,
-}
+/**
+ * Get name of Javascript Object Class
+ * @param {Object} classObject 
+ * @returns {string} Name of the Javascript Object Class
+ */
+function getObjectClassName(classObject) {
+    return classObject.constructor.name;
+} 
+
+exports.getUMLPackagElementByName = getUMLPackagElementByName;
+exports.getUMLClassElementByName = getUMLClassElementByName;
+exports.getUMLDataType = getUMLDataType;
+exports.addStringTag = addStringTag;
+exports.getTagValue = getTagValue;
+exports.encodeJB64ToObj = encodeJB64ToObj;
+exports.jsonToString = jsonToString;
+exports.getObjectClassName = getObjectClassName;
