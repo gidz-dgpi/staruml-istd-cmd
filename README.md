@@ -2,8 +2,6 @@
 
 Extensie ter ondersteuning van Modellen en Metadata voor gezamenlijk gebruik binnen dce iStandaarden.
 
-test
-
 ---
 
 Bronnen:
