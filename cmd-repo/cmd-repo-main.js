@@ -1,5 +1,5 @@
 /**
- * StarUML Gegevensmodel iStandaarden Extension Main Module
+ * StarUML iStandaarden Common Model Data Extension Main Module
  * 
  * Log 20-5-2025:
  * - Copied from https://repository.istandaarden.nl/dgpi/modelleren/dgpi-staruml/staruml-istd
@@ -9,14 +9,16 @@
 
 const prefsRepoMetaData = require('../repo/repo-prefs').metaData;
 const prefsCmdMetaData = require('../cmd-repo/cmd-repo-prefs').metaData;
-const sourceData = require('./cmd-repo-source-data');
+const repoUiSourceData = require('./cmd-repo-ui-source-data');
 
 async function _handleRepoRetrieveCommonModelData() {
-    await sourceData.retrieve();
+    const result = await repoUiSourceData.retrieve();
+    app.toast.info(result);
 }
 
-function _handleRepoStoreCommonModelData() {
-    console.log('nog te implementeren');
+async function _handleRepoStoreCommonModelData() {
+    const result = await repoUiSourceData.store();
+    app.toast.info(result);
 }
 
 function init() {

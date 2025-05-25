@@ -2,12 +2,12 @@
  * GitLab Repository Api Module for StarUML Extension
  * Based on https://docs.gitlab.com/ee/api
  * 
- * Log 19-5-2025:
+ * Log 21-5-2025:
  * - Copied from https://repository.istandaarden.nl/dgpi/modelleren/dgpi-staruml/staruml-istd
+ * - Rewrite asynchrone functions with "async" and "await" statements
  */
 
 const axios = require('axios');
-const GitLabCommitAction = require('./gitlab-commit-action');
 const preferenceKeys = require('./repo-prefs').keys;
 const apiPath = '/api/v4';
 var gitLabApi = undefined;
@@ -29,44 +29,66 @@ function init() {
 }
 
 /**
+ * Handling of low-level Api Error
+ * @param {Error} error 
+ */
+function _handleApiError(error) {
+    app.toast.error(error);
+    throw error;
+}
+
+/**
  * Based on https://docs.gitlab.com/ee/api/branches.html#list-repository-branches
  * @param {String} projectId 
- * @returns {Promise<axios.get>}
+ * @returns {Promise<string[]>}
  */
-function listRepoBranches(projectId) {
-    const id = encodeURIComponent(projectId)
-    const url = `/projects/${id}/repository/branches`
-    return gitLabApi.get(url)
+async function listRepoBranches(projectId) {
+    const id = encodeURIComponent(projectId);
+    const url = `/projects/${id}/repository/branches`;
+
+    try {
+        const response = await gitLabApi.get(url);
+        return response;
+    } catch (error) {
+        _handleApiError(error);
+    }
 }
 
 /**
  * Get the id of the group which has given namespace
  * @param {string} namespace
- * @returns {number}
+ * @returns {Promise<number>}
  */
-function getGroupId(namespace) {
-    const url = '/groups'
-    var params = {}
-    params['search'] = namespace
-    return gitLabApi.get(url, { params: params })
-        .then(response => {
-            return response.data[0].id
-        })
+async function getGroupId(namespace) {
+    const url = '/groups';
+    var params = {};
+    params['search'] = namespace;
+
+    try {
+        const response = await gitLabApi.get(url, { params: params });
+        return response.data[0].id;
+    } catch (error) {
+        _handleApiError(error);
+    }
 }
 
 /**
  * List the projects belonging to given group (namespace)
  * @param {string} namespace
- * @returns {Promise<axios.get>}
+ * @returns {Promise<String[]>}
  */
-function listProjectsForGroup(namespace) {
-    return getGroupId(namespace)
-        .then(groupId => {
-            const url = '/groups/' + groupId + '/projects?pagination=keyset&per_page=100&order_by=id&sort=asc'
-            var params = {}
-            params['include_subgroups'] = 'true'
-            return gitLabApi.get(url, { params: params })
-        })
+async function listProjectsForGroup(namespace) {
+    const groupId = await getGroupId(namespace);
+    const url = '/groups/' + groupId + '/projects?pagination=keyset&per_page=100&order_by=id&sort=asc';
+    var params = {};
+    params['include_subgroups'] = 'true';
+
+    try {
+        const response = await gitLabApi.get(url, { params: params });
+        return response;
+    } catch (error) {
+        _handleApiError(error);
+    }
 }
 
 /**
@@ -86,11 +108,18 @@ function buildRepoFilesPath(projectId, filePath) {
  * @param {String} projectId 
  * @param {String} filePath 
  * @param {String} ref 
- * @returns {Promise<axios.get>}
+ * @returns {Promise<JB64>} JB64-formated String. Based on: https://jb64.org
  */
-function getFileFromRepo(projectId, filePath, ref) {
-    const config = { params: { ref: ref } }
-    return gitLabApi.get(buildRepoFilesPath(projectId, filePath), config)
+async function getFileFromRepo(projectId, filePath, ref) {
+    const config = { params: { ref: ref } };
+    const repoFilePath = buildRepoFilesPath(projectId, filePath);
+
+    try {
+        const response = await gitLabApi.get(repoFilePath, config);
+        return response;
+    } catch (error) {
+        _handleApiError(error);
+    }
 }
 
 /**
@@ -100,15 +129,22 @@ function getFileFromRepo(projectId, filePath, ref) {
  * @param {String} filePath 
  * @param {String} content 
  * @param {String} commitMessage 
- * @returns {Promise<axios.post>}
+ * @returns {Promise<any>} GitLab Api Response
  */
-function createNewFileInRepo(projectId, branch, filePath, content, commitMessage) {
+async function createNewFileInRepo(projectId, branch, filePath, content, commitMessage) {
     const data = {
         branch: branch,
         content: content,
         commit_message: commitMessage
+    };
+    const repoFilePath = buildRepoFilesPath(projectId, filePath);
+
+    try {
+        const response = await gitLabApi.post(repoFilePath, data);
+        return response;
+    } catch (error) {
+        _handleApiError(error);
     }
-    return gitLabApi.post(buildRepoFilesPath(projectId, filePath), data)
 }
 
 /**
@@ -118,99 +154,24 @@ function createNewFileInRepo(projectId, branch, filePath, content, commitMessage
  * @param {String} filePath 
  * @param {String} content 
  * @param {String} commitMessage 
- * @returns {Promise<axios.put>}
+ * @returns {Promise<any>} GitLab Api Response
  */
-function updateExistingFileInRepo(projectId, branch, filePath, content, commitMessage) {
+async function updateExistingFileInRepo(projectId, branch, filePath, content, commitMessage) {
     const data = {
         branch: branch,
         content: content,
         commit_message: commitMessage
+    };
+    const repoFilePath = buildRepoFilesPath(projectId, filePath);
+
+    try {
+        const response = await gitLabApi.put(repoFilePath, data);
+        return response;
+    } catch (error) {
+        _handleApiError(error);
     }
-    return gitLabApi.put(buildRepoFilesPath(projectId, filePath), data)
 }
 
-/**
- * Build the API url for the commits API
- * @param {String | Number} projectId 
- * @returns 
- */
-function buildCommitUrl(projectId) {
-    return `/projects/${projectId}/repository/commits`
-}
-
-/**
- * Determines the action GitLab should perform on the given file.
- * @param {String | Number} projectId 
- * @param {String} branch 
- * @param {GitLabCommitAction} path 
- * @returns 'update' when the file needs to be updated, 'create' when the file needs to be created
- */
-function determineActionForCommitAction(projectId, branch, commitAction) {
-    return getFileFromRepo(projectId, commitAction.filePath, branch)
-        .then(response => {
-            if (response.status >= 200 && response.status < 300) {
-                return {
-                    file_path: commitAction.filePath,
-                    content: commitAction.content,
-                    action: 'update'
-                }
-            } else {
-                throw `Cannot determine action for file ${path}: API returned status ${response.status}`
-            }
-        })
-        .catch(error => {
-            if (error.status == 404) {
-                return {
-                    file_path: commitAction.filePath,
-                    content: commitAction.content,
-                    action: 'create'
-                }
-            } else {
-                throw error
-            }
-        })
-}
-
-/**
- * For each commitAction, set the correct action: update if the file exists, or create if it doesn't exist.
- * @param {String | Number} projectId 
- * @param {String} branch 
- * @param {Array} commitActions 
- * @returns {Array[GitLabCommitAction]}
- */
-function determineActionForCommitActions(projectId, branch, commitActions) {
-    return Promise.allSettled(
-        commitActions.map(action => determineActionForCommitAction(projectId, branch, action))
-    )
-        .then(results => {
-            return results.map(result => (result.value))
-        })
-        .catch(error => {
-            throw error.reason
-        })
-}
-
-/**
- * 
- * @param {String | Number} projectId 
- * @param {String} branch 
- * @param {String} commitMessage 
- * @param {Array[GitLabCommitAction]} commitActions 
- */
-function commitToRepo(projectId, branch, commitMessage, commitActions) {
-    return determineActionForCommitActions(projectId, branch, commitActions)
-        .then((actions) => {
-            const data = {
-                branch: branch,
-                commit_message: commitMessage,
-                actions: actions
-            }
-            const url = buildCommitUrl(projectId)
-            return gitLabApi.post(url, data)
-        })
-}
-
-exports.commitToRepo = commitToRepo;
 exports.init = init;
 exports.listProjectsForGroup = listProjectsForGroup;
 exports.listRepoBranches = listRepoBranches;
