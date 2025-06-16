@@ -10,33 +10,34 @@ const trans = require('./cmd-repo-trans-source-data');
 
 /**
  * Build Repository Selection Options from Repo List
- * @param {String[]} repoList
+ * @param {{id: number, name: string}[]} repoList
+ * @returns {{text: string, value: string}[]}
  */
 function buildRepoOptions(repoList) {
-    const repoOptions = []
+    const repoOptions = [];
 
-    for (let i = 0; i < repoList.length; i++) {
+    for (const repo of repoList) {
         repoOptions.push({
-            text: String(repoList[i].name),
-            value: String(repoList[i].id)
-        })
+            text: repo.name,
+            value: String(repo.id)
+        });
     }
 
-    return repoOptions
+    return repoOptions;
 }
 
 /**
  * Get Branche Options from Branche List
  * @param {String[]} brancheList 
+ * @returns {{text: string, value: string}[]}
  */
 function getBrancheOptions(brancheList) {
     const brancheOptions = []
 
-    for (let i = 0; i < brancheList.length; i++) {
-        const branchName = String(brancheList[i].name)
+    for (const branch of brancheList) {
         brancheOptions.push({
-            text: branchName,
-            value: branchName
+            text: branch.name,
+            value: branch.name
         })
     }
 
@@ -91,8 +92,8 @@ async function retrieve() {
 
     // (2) Load Common Data
     const root = await trans.loadCommonRootData(projectId, branch);
-    const model = await trans.importCommonModelData(root, projectId, branch);
     const profile = await trans.importCommonProfileData(root, projectId, branch);
+    const model = await trans.importCommonModelData(root, projectId, branch);
 
     return `Project met Model and Profile opgehaald van repository ${projectName} / branch ${branch}`;
 }
@@ -115,7 +116,12 @@ async function store() {
     }
 
     // Update Common Project Data
-    const projectData = trans.getProjectData();
+    const projectData = await trans.getProjectData();
+
+    if (projectData.status != 200) {
+        return `Ophalen project-data is gefaalt!`;
+    }
+
     const jsonContent = trans.buildJsonContent(projectData.root);
     const rootUpdateResponse = await trans.updateCommonRootData(jsonContent, projectData.projectId, projectData.branch, commitMessage);
 
@@ -138,7 +144,7 @@ async function store() {
         return `Bewaren UML Profile Data in Repository gefaald! Foutmelding: ${profileUpdateResponse.status}-${profileUpdateResponse.statusText}`
     }
 
-    return `Laatste wijzigingen van Project met Model and Profile bewaard in repository / barnch`;
+    return `Laatste wijzigingen van Project met Model and Profile bewaard in repository "${projectData.projectNameWithNameSpace}" / branch "${projectData.branch}"`;
 }
 
 exports.retrieve = retrieve;

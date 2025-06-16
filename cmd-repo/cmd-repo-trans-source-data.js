@@ -26,7 +26,7 @@ function init() {
 
 /**
  * Get Model Data Repositories
- * @returns {Promise<String[]>}
+ * @returns {Promise<{id: number, name: string}[]>}
  */
 async function getCommonModelDataRepoList() {
     const namespace = app.preferences.get(keysRepoMetaData.repoModelGroupPath) +
@@ -171,16 +171,22 @@ function buildJsonContent(root) {
 
 /**
  * Get Data and Repo Config
- * @returns {{root: Project, projectId: string, branch: string}}
+ * @returns {Promise<{root: Project, status: number, projectNameWithNameSpace: string, projectId: string, branch: string}>}
  */
-function getProjectData() {
+async function getProjectData() {
     const root = app.project.getProject();
+    const projectId = utils.getTagValue(root, PROJECT_ID_TAG);
+    const branch = utils.getTagValue(root, BRANCH_TAG);
+    const response = await api.getProject(projectId);
     return {
         root: root,
-        projectId: utils.getTagValue(root, PROJECT_ID_TAG),
-        branch: utils.getTagValue(root, BRANCH_TAG)
-    }
+        status: response.status,
+        projectNameWithNameSpace: response.data.name_with_namespace,
+        projectId: projectId,
+        branch: branch,
+    };
 }
+
 
 exports.init = init;
 exports.getCommonModelDataRepoList = getCommonModelDataRepoList;

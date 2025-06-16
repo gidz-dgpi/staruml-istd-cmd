@@ -1,0 +1,62 @@
+[
+  {
+    "label": "MIM-UML",
+    "id": "mim-uml",
+    "position": "first",
+    "diagram-types": [
+      "UMLClassDiagram"
+    ],
+    "items": [
+      {
+        "label": "Objecttype",
+        "id": "mim-uml-objecttype",
+        "icon": "icon-UMLClass",
+        "rubberband": "rect",
+        "command": "mim:uml:create:objecttype",
+        "command-arg": {
+          "id": "UMLClass"
+        }
+      },
+      {
+        "label": "Keuze",
+        "id": "mim-uml-keuze",
+        "icon": "icon-UMLClass",
+        "rubberband": "rect",
+        "command": "mim:uml:create:keuze",
+        "command-arg": {
+          "id": "UMLClass"
+        }
+      },
+      {
+        "label": "Relatiesoort",
+        "id": "mim-uml-relatiesoort",
+        "icon": "icon-UMLAssociation",
+        "rubberband": "line",
+        "command": "mim:uml:create:relatiesoort",
+        "command-arg": {
+          "id": "UMLAssociation"
+        }
+      },
+      {
+        "label": "Directed Relatiesoort",
+        "id": "mim-uml-directed-relatiesoort",
+        "icon": "icon-UMLDirectedAssociation",
+        "rubberband": "line",
+        "command": "mim:uml:create:directed_relatiesoort",
+        "command-arg": {
+          "id": "UMLAssociation"
+        }
+      },
+      {
+        "label": "Generalisatie",
+        "id": "mim-uml-generalisatie",
+        "icon": "icon-UMLGeneralization",
+        "rubberband": "line",
+        "command": "mim:uml:create:generalisatie",
+        "command-arg": {
+          "id": "UMLGeneralization"
+        }
+      }
+    ]
+  }
+]
