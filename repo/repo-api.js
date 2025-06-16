@@ -38,8 +38,24 @@ function _handleApiError(error) {
 }
 
 /**
+ * Based on https://docs.gitlab.com/api/projects/#get-a-single-project
+ * @param {String | Number} projectId 
+ */
+async function getProject(projectId) {
+    const id = encodeURIComponent(projectId);
+    const url = `/projects/${id}`;
+
+    try {
+        const response = await gitLabApi.get(url);
+        return response;
+    } catch (error) {
+        _handleApiError(error);
+    }
+}
+
+/**
  * Based on https://docs.gitlab.com/ee/api/branches.html#list-repository-branches
- * @param {String} projectId 
+ * @param {String | Number} projectId 
  * @returns {Promise<string[]>}
  */
 async function listRepoBranches(projectId) {
@@ -74,6 +90,7 @@ async function getGroupId(namespace) {
 
 /**
  * List the projects belonging to given group (namespace)
+ * Based on https://docs.gitlab.com/api/groups/#list-groups
  * @param {string} namespace
  * @returns {Promise<String[]>}
  */
@@ -93,7 +110,7 @@ async function listProjectsForGroup(namespace) {
 
 /**
  * Based on https://docs.gitlab.com/ee/api/repository_files.html
- * @param {String} projectId 
+ * @param {String | Number} projectId 
  * @param {String} filePath 
  * @returns {encodedURI}
  */
@@ -105,7 +122,7 @@ function buildRepoFilesPath(projectId, filePath) {
 
 /**
  * Based on: https://docs.gitlab.com/ee/api/repository_files.html#get-file-from-repository
- * @param {String} projectId 
+ * @param {String | Number} projectId 
  * @param {String} filePath 
  * @param {String} ref 
  * @returns {Promise<JB64>} JB64-formated String. Based on: https://jb64.org
@@ -124,7 +141,7 @@ async function getFileFromRepo(projectId, filePath, ref) {
 
 /**
  * Based on: https://docs.gitlab.com/ee/api/repository_files.html#create-new-file-in-repository
- * @param {String} projectId 
+ * @param {String | Number} projectId 
  * @param {String} branch 
  * @param {String} filePath 
  * @param {String} content 
@@ -149,7 +166,7 @@ async function createNewFileInRepo(projectId, branch, filePath, content, commitM
 
 /**
  * Based on: https://docs.gitlab.com/ee/api/repository_files.html#update-existing-file-in-repository
- * @param {String} projectId 
+ * @param {String | Number} projectId 
  * @param {String} branch 
  * @param {String} filePath 
  * @param {String} content 
@@ -173,6 +190,7 @@ async function updateExistingFileInRepo(projectId, branch, filePath, content, co
 }
 
 exports.init = init;
+exports.getProject = getProject;
 exports.listProjectsForGroup = listProjectsForGroup;
 exports.listRepoBranches = listRepoBranches;
 exports.getFileFromRepo = getFileFromRepo;

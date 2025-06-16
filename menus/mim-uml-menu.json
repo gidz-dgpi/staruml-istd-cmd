@@ -1,0 +1,31 @@
+{
+  "context-menu": {
+    "#diagram-canvas": [
+      {
+        "label": "MIM UML Add",
+        "id": "mime.uml.add",
+        "position": "first",
+        "submenu": [
+          {
+            "label": "Attribuut",
+            "id": "mime.uml.add.attribuut",
+            "command": "mim:uml:add:attribuut",
+            "command-arg": {
+              "id": "UMLAttribute",
+              "field": "attributes"
+            }
+          },
+          {
+            "label": "Keuze",
+            "id": "mime.uml.add.keuze",
+            "command": "mim:uml:add:keuze",
+            "command-arg": {
+              "id": "UMLAttribute",
+              "field": "attributes"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
